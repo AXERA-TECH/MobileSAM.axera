@@ -1,42 +1,42 @@
 {
-    "model_type": "ONNX",
-    "npu_mode": "NPU3",
-    "quant": {
-      "input_configs": [
-        {
-          "tensor_name": "DEFAULT",
-          "calibration_dataset": "./dataset/coco_1000.tar",
-          "calibration_size": 32,
-          "calibration_mean": [123.675, 116.28, 103.53],
-          "calibration_std": [58.395, 57.12, 57.375]
-        }
-      ],
-      "calibration_method": "MSE",
-      "precision_analysis": true,
-          "precision_analysis_method": "EndToEnd",
-          "transformer_opt_level": 1,
-          "layer_configs": [
-        {
-          "start_tensor_names": [
-            "DEFAULT"
-          ],
-          "end_tensor_names": [
-            "DEFAULT"
-          ],
-          "data_type": "U16"
-        }
-      ]
-    },
-    "input_processors": [
+  "model_type": "ONNX",
+  "npu_mode": "NPU3",
+  "quant": {
+    "input_configs": [
       {
+        "tensor_name": "DEFAULT",
+        "calibration_dataset": "./dataset/imagenet-calib.tar",
+		"calibration_size": 4,
+		"calibration_mean": [123.675, 116.28, 103.53],
+        "calibration_std": [58.395, 57.12, 57.375]
+      }
+    ],
+    "calibration_method": "MinMax",
+    "precision_analysis": true,
+    "precision_analysis_method": "EndToEnd",
+	# "precision_analysis_mode": "NPUBackend",
+	"conv_bias_data_type": "FP32",
+    "enable_smooth_quant": true,
+	"disable_auto_refine_scale": true,
+    "layer_configs": [
+	 {
+		"start_tensor_names": ["DEFAULT"], # string of list
+		"end_tensor_names": ["DEFAULT"],   # string of list
+		"data_type": "U16",
+		# "weight_data_type": "S16"
+	  },	  
+	],		
+  },
+  "input_processors": [
+    {
         "tensor_name": "DEFAULT",
         "tensor_format": "RGB",
         "src_format": "BGR",
         "src_dtype": "U8",
         "src_layout": "NHWC"
-      }
-    ],
-    "compiler": {
-      "check": 0
     }
+  ],
+  "compiler": {
+    "check": 0
   }
+}
