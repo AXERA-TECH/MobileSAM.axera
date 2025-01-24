@@ -78,6 +78,33 @@
 
   以上命令都在 `export.sh` 脚本文件内记录。
 
+## 转换模型（ONNX -> Axera）
+
+使用模型转换工具 `Pulsar2` 将 ONNX 模型转换成适用于 Axera 的 NPU 运行的模型文件格式 `.axmodel`，通常情况下需要经过以下两个步骤：
+
+- 生成适用于该模型的 PTQ 量化校准数据集
+- 使用 `Pulsar2 build` 命令集进行模型转换（PTQ 量化、编译），更详细的使用说明请参考 [AXera Pulsar2 工具链指导手册](https://pulsar2-docs.readthedocs.io/zh-cn/latest/index.html)
+
+### 下载量化数据集
+```
+wget https://github.com/AXERA-TECH/MobileSAM.axera/releases/download/v1.0/imagenet-calib.tar
+```
+这个模型的输入是单张图片，比较简单，这里我们直接下载打包好的图片数据  
+
+### 模型转换
+
+#### 修改配置文件
+ 
+检查`config_sam_encoder_u16.json` 中 `calibration_dataset` 字段，将该字段配置的路径改为上一步下载的量化数据集存放路径  
+
+#### Pulsar2 build
+
+参考命令如下：
+
+```
+pulsar2 build --input mobile_sam_encoder.onnx --config config_sam_encoder_u16.json --output_dir build-output --output_name mobile_sam_encoder.axmodel --target_hardware AX650 --npu_mode NPU3 --compiler.check 0
+```
+
 ## 运行
 都可以在 main.py 上修改点或框的坐标来得到其他图片的结果
 ### PC
@@ -98,10 +125,18 @@ python python_ax/main.py images/test.jpg
 ```
 
 ### Latency
+
+#### AX650N
+
 | model |resolution| latency(ms) |
 |---|---|---|
 |mobilesam encoder tinyvit|1024*1024|50|
 
+#### AX630C
+
+| model |resolution| latency(ms) |
+|---|---|---|
+|mobilesam encoder tinyvit|1024*1024|400|
 
 ## 技术讨论
 
