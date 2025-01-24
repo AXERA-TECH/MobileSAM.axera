@@ -24,11 +24,15 @@ if __name__ == "__main__":
     idx = output[0].argmax()
     
     mask = output[1][:,idx,:,:][0]
-    mask_mat = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
+    mask_mat = np.zeros((mask.shape[0], mask.shape[1]), dtype=np.uint8)
     mask_mat[mask>0] = 255
-    mask_mat = cv2.resize(mask_mat, (max(w, h),max(w, h)))
-    mask_mat = mask_mat[:h, :w,:]
+    mask_mat = cv2.resize(mask_mat, (max(w, h),max(w, h)),interpolation=cv2.INTER_LINEAR)
+    mask_mat = mask_mat[:h, :w]
     cv2.imwrite("point_mask.jpg", mask_mat)
+    mask_ovlap = np.zeros((mask_mat.shape[0], mask_mat.shape[1], 3), dtype=np.uint8)
+    mask_ovlap[mask_mat>0] = [255, 0, 0]
+    image_ovlap = cv2.addWeighted(image, 1, mask_ovlap, 0.5, 0)
+    cv2.imwrite("point_mask_ovlap.jpg", image_ovlap)
     
     for i in range(4):
         mask = output[1][:,i,:,:][0]
@@ -44,11 +48,15 @@ if __name__ == "__main__":
     idx = output[0].argmax()
     
     mask = output[1][:,idx,:,:][0]
-    mask_mat = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
+    mask_mat = np.zeros((mask.shape[0], mask.shape[1]), dtype=np.uint8)
     mask_mat[mask>0] = 255
-    mask_mat = cv2.resize(mask_mat, (max(w, h),max(w, h)))
-    mask_mat = mask_mat[:h, :w,:]
+    mask_mat = cv2.resize(mask_mat, (max(w, h),max(w, h)),interpolation=cv2.INTER_LINEAR)
+    mask_mat = mask_mat[:h, :w]
     cv2.imwrite("box_mask.jpg", mask_mat)
+    mask_ovlap = np.zeros((mask_mat.shape[0], mask_mat.shape[1], 3), dtype=np.uint8)
+    mask_ovlap[mask_mat>0] = [255, 0, 0]
+    image_ovlap = cv2.addWeighted(image, 1, mask_ovlap, 0.5, 0)
+    cv2.imwrite("box_mask_ovlap.jpg", image_ovlap)
     
     for i in range(4):
         mask = output[1][:,i,:,:][0]

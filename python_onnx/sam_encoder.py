@@ -59,4 +59,4 @@ class SAMEncoder:
         padded_image = np.expand_dims(padded_image, axis=0)
         
 
-        return self.sess.run(None,{"input":padded_image}), scale
+        return self.sess.run(None,{self.sess.get_inputs()[0].name:padded_image}), scale
