@@ -87,8 +87,8 @@
 python python_onnx/main.py images/test.jpg 
 ```
 上下分别为point prompt和bbox prompt的结果
-![](point_mask.jpg)
-![](box_mask.jpg)
+![](images/point_mask.jpg)
+![](images/box_mask.jpg)
 
 ### 板端
 返回到项目根目录，编辑修改 `python_ax/main.py`，将 encoder 和 decoder 都修改成对应的路径。
