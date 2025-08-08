@@ -7,7 +7,10 @@ class SAMDecoder:
 
     def __init__(self, model_path):
         self.sess = onnxruntime.InferenceSession(model_path)
-
+        for input in self.sess.get_inputs():
+            print(input.name, input.shape)
+        for output in self.sess.get_outputs():
+            print(output.name, output.shape)
         
         self.mask = np.zeros((1, 1, 256, 256), np.float32)
         self.has_mask = np.array([0], np.float32)

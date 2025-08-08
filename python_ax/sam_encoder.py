@@ -5,6 +5,10 @@ import numpy as np
 class SAMEncoder:
     def __init__(self,model_path):
         self.sess = axengine.InferenceSession(model_path)
+        for input in self.sess.get_inputs():
+            print(input.name, input.shape)
+        for output in self.sess.get_outputs():
+            print(output.name, output.shape)
         self.input_shape = (1024, 1024)
     
     def letterbox(self, image, target_size, color=(114, 114, 114)):
@@ -46,6 +50,7 @@ class SAMEncoder:
         padded_image, scale, (pad_width, pad_height) = self.letterbox(image, self.input_shape)
         
         padded_image = cv2.cvtColor(padded_image, cv2.COLOR_BGR2RGB)
+        padded_image = np.expand_dims(padded_image, axis=0)
         return padded_image, scale
         
     def encode(self,image):

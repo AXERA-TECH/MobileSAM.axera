@@ -7,11 +7,13 @@ import argparse
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("img_path", type=str, default="models/mobile_sam_encoder.axmodel")
+    parser.add_argument("--img_path", type=str, default="models/mobile_sam_encoder.axmodel")
+    parser.add_argument("--enc", type=str)
+    parser.add_argument("--dec", type=str)
     args = parser.parse_args()
     
-    encoder = SAMEncoder("models/mobile_sam_encoder.axmodel")
-    decoder = SAMDecoder("models/mobile_sam_decoder_low_res.onnx")
+    encoder = SAMEncoder(args.enc)
+    decoder = SAMDecoder(args.dec)
     
     image = cv2.imread(args.img_path)
     h, w, _ = image.shape
