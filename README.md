@@ -121,15 +121,15 @@ pulsar2 build --input mobile_sam_decoder_sub_sim.onnx --config sam_decoder_confi
 返回到项目根目录，编辑修改 `python_onnx/main.py`，将 encoder 和 decoder 都修改成对应的路径。
 运行以下命令，得到 mask 图片
 ```
-python python_onnx/main.py images/test.jpg 
+python python_onnx/main.py -i images/test.jpg 
 ```
 
 ### 板端
 返回到项目根目录，编辑修改 `python_ax/main.py`，将 encoder 和 decoder 都修改成对应的路径。
-运行以下命令，得到 mask 图片
+运行以下命令，得到 mask和可视化图片
 
 ```
-python python_ax/main.py images/test.jpg 
+python python_ax/main.py -i images/test.jpg -c 650
 ```
 
 上下分别为point prompt和bbox prompt的结果
