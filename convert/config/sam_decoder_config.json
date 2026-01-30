@@ -1,0 +1,68 @@
+{
+  "model_type": "ONNX",
+  "onnx_opt": {
+    "disable_onnx_optimization": false,
+    "enable_onnxsim": true,
+    "model_check": false,
+    "disable_transformation_check": false,
+    "save_tensors_data": false
+  },
+  "quant": {
+    "input_configs": [
+      {
+        "tensor_name": "image_embeddings",
+        "calibration_dataset": "./dataset/image_embeddings.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1
+      },
+      {
+        "tensor_name": "point_coords",
+        "calibration_dataset": "./dataset/point_coords.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1
+      },
+      {
+        "tensor_name": "point_labels",
+        "calibration_dataset": "./dataset/point_labels.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1
+      },
+      {
+        "tensor_name": "mask_input",
+        "calibration_dataset": "./dataset/mask_input.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1
+      },
+      {
+        "tensor_name": "has_mask_input",
+        "calibration_dataset": "./dataset/has_mask_input.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1
+      }
+    ],
+    "layer_configs": [
+      {
+        "start_tensor_names": ["DEFAULT"],
+        "end_tensor_names": ["DEFAULT"],
+        "data_type": "U16"
+      },
+      {
+        "op_types": ["MatMul"],
+        "data_type": "FP32"
+      },
+      {
+        "op_types": ["Cos", "Sin"],
+        "data_type": "U8"
+      }
+    ],
+    "calibration_method": "MinMax",
+    "precision_analysis": true,
+    "precision_analysis_method": "EndToEnd",
+    "precision_analysis_mode": "NPUBackend",
+    "transformer_opt_level": 1
+  },
+  
+  "compiler": {
+      "check": 0
+  }
+}
