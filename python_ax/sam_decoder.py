@@ -1,12 +1,11 @@
-import onnxruntime
-import cv2
 import numpy as np
+import axengine as axe
 
 
 class SAMDecoder:
 
     def __init__(self, model_path):
-        self.sess = onnxruntime.InferenceSession(model_path)
+        self.sess = axe.InferenceSession(model_path)
         for input in self.sess.get_inputs():
             print(input.name, input.shape)
         for output in self.sess.get_outputs():
