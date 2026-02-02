@@ -1,6 +1,5 @@
 # MobileSAM
 
-
 ## 模型导出
 - 进入 submodule 路径 `convert/MobileSAM`,运行以下命令
     ```shell
@@ -87,56 +86,70 @@
 
 ### 下载量化数据集
 ```
-wget https://github.com/AXERA-TECH/MobileSAM.axera/releases/download/v1.0/imagenet-calib.tar
+wget https://github.com/AXERA-TECH/MobileSAM.axera/releases/download/v2.0/dataset.tar
 ```
-这个模型的输入是单张图片，比较简单，这里我们直接下载打包好的图片数据  
+将打包好的数据集解压到 `convert/config/dataset/` 目录下
 
 ### 模型转换
 
 #### 修改配置文件
  
-检查`config_sam_encoder_u16.json` 中 `calibration_dataset` 字段，将该字段配置的路径改为上一步下载的量化数据集存放路径  
+检查`sam_encoder_config.json` 和`sam_decoder_config.json`中的 `calibration_dataset` 字段，将该字段配置的路径改为上一步下载的量化数据集存放路径  
 
 #### Pulsar2 build
 
 参考命令如下：
 
 ```
-pulsar2 build --input mobile_sam_encoder.onnx --config config_sam_encoder_u16.json --output_dir build-output --output_name mobile_sam_encoder.axmodel --target_hardware AX650 --npu_mode NPU3 --compiler.check 0
+# encoder
+# 650
+pulsar2 build --input mobile_sam_encoder.onnx --config sam_encoder_config.json --output_dir build-output --output_name mobile_sam_encoder.axmodel --target_hardware AX650 --npu_mode NPU3 --compiler.check 0
+# 630C/620E
+pulsar2 build --input mobile_sam_encoder.onnx --config sam_encoder_config.json --output_dir build-output --output_name mobile_sam_encoder.axmodel --target_hardware AX620E --npu_mode NPU2 --compiler.check 0
+
+# decoder
+# 650
+pulsar2 build --input mobile_sam_decoder_sub_sim.onnx --config sam_decoder_config.json --output_dir build-output --output_name mobile_sam_decoder.axmodel --target_hardware AX650 --npu_mode NPU3 --compiler.check 0
+# 630C/620E
+pulsar2 build --input mobile_sam_decoder_sub_sim.onnx --config sam_decoder_config.json --output_dir build-output --output_name mobile_sam_decoder.axmodel --target_hardware AX620E --npu_mode NPU2 --compiler.check 0
 ```
+将得到 `mobile_sam_encoder.axmodel` 和 `mobile_sam_decoder.axmodel` 两个板端模型文件，导入开发板中。
 
 ## 运行
-都可以在 main.py 上修改点或框的坐标来得到其他图片的结果
+在 main.py 上修改点或框的坐标来得到其他图片的结果
 ### PC
 返回到项目根目录，编辑修改 `python_onnx/main.py`，将 encoder 和 decoder 都修改成对应的路径。
 运行以下命令，得到 mask 图片
 ```
-python python_onnx/main.py images/test.jpg 
+python python_onnx/main.py -i images/test.jpg 
 ```
-上下分别为point prompt和bbox prompt的结果
-![](images/point_mask.jpg)
-![](images/box_mask.jpg)
 
 ### 板端
 返回到项目根目录，编辑修改 `python_ax/main.py`，将 encoder 和 decoder 都修改成对应的路径。
-运行以下命令，得到 mask 图片
+运行以下命令，得到 mask和可视化图片
+
 ```
-python python_ax/main.py images/test.jpg 
+python python_ax/main.py -i images/test.jpg -c 650
 ```
 
+上下分别为point prompt和bbox prompt的结果
+![](images/point_mask_ovlap_point_0.jpg)
+![](images/box_mask_ovlap_box_0.jpg)
 ### Latency
 
 #### AX650N
 
-| model |resolution| latency(ms) |
+| model |latency(ms)| CMM(MiB) |
 |---|---|---|
-|mobilesam encoder tinyvit|1024*1024|50|
+|mobilesam encoder tinyvit 1024*1024|49.495|48.334|
+|mobilesam decoder|9.930|16.703|
 
 #### AX630C
 
-| model |resolution| latency(ms) |
+| model |latency(ms)| CMM(MiB) |
 |---|---|---|
-|mobilesam encoder tinyvit|1024*1024|400|
+|mobilesam encoder tinyvit 1024*1024|520.044|	63.231|
+|mobilesam decoder|36.382|14.970|
 
 ## 技术讨论
 
